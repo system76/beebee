@@ -2,19 +2,28 @@ defmodule S76co.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :s76co,
-     version: "0.0.1",
-     elixir: "~> 1.2",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps]
+    [
+      app: :s76co,
+      version: "0.0.1",
+      elixir: "~> 1.2",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps
+   ]
   end
 
   # Configuration for the OTP application
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [
+      mod: {S76co, []},
+      applications: [
+        :cowboy,
+        :logger,
+        :exredis,
+      ],
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +36,11 @@ defmodule S76co.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:cowboy, "~> 1.0"},
+      {:plug,   "~> 1.1"},
+      {:exredis, ">= 0.2.4"},
+      {:poison, "~> 2.1"},
+    ]
   end
 end
