@@ -1,7 +1,7 @@
-defmodule S76co.Router do
+defmodule BeeBee.Router do
   use Plug.Router
 
-  alias S76co.ShortenedURL
+  alias BeeBee.ShortenedURL
 
   plug Plug.Logger
   plug Plug.Parsers, parsers: [:json], json_decoder: Poison

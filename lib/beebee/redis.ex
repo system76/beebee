@@ -1,4 +1,4 @@
-defmodule S76co.Redis do
+defmodule BeeBee.Redis do
   use GenServer
 
   ################

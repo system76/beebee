@@ -1,4 +1,4 @@
-defmodule S76co do
+defmodule BeeBee do
   use Application
 
   def start(_type, _args) do
@@ -6,7 +6,7 @@ defmodule S76co do
 
     children = [
       worker(__MODULE__, [], function: :run),
-      worker(S76co.Redis, [])
+      worker(BeeBee.Redis, [])
     ]
 
     opts = [strategy: :one_for_one]
@@ -15,6 +15,6 @@ defmodule S76co do
   end
 
   def run do
-    Plug.Adapters.Cowboy.http S76co.Router, []
+    Plug.Adapters.Cowboy.http BeeBee.Router, []
   end
 end

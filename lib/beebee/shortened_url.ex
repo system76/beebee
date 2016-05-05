@@ -1,7 +1,7 @@
-defmodule S76co.ShortenedURL do
-  alias S76co.{Redis, ShortTag}
+defmodule BeeBee.ShortenedURL do
+  alias BeeBee.{Redis, ShortTag}
 
-  @namespace "s76co"
+  @namespace "beebee"
 
   def add(%{"url" => url, "short_tag" => short_tag}) do
     url_key = "#{@namespace}:#{short_tag}:url"
