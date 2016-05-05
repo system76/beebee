@@ -3,3 +3,6 @@
 /deps
 erl_crash.dump
 *.ez
+
+# Conform config
+/config/beebee.conf
