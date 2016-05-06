@@ -38,15 +38,17 @@ defmodule BeeBee.ShortenedURL do
   end
 
   def stats do
-    keys = scan_keys
-
-    Enum.reduce keys, %{}, fn key, memo ->
+    scan_keys
+    |> Enum.reduce(%{}, fn key, memo ->
       [_, short_tag, type] = String.split key, ":"
       value = Redis.query(["GET", key])
 
       memo = Map.put_new(memo, short_tag, %{})
       put_in memo, [short_tag, type], value
-    end
+    end)
+    |> Enum.map(fn {short_tag, data} ->
+      Dict.put data, "short_tag", short_tag
+    end)
   end
 
   defp scan_keys, do: scan_keys(nil, [])
