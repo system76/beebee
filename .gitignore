@@ -4,5 +4,6 @@
 erl_crash.dump
 *.ez
 
-# Conform config
+# Deploy config
 /config/beebee.conf
+/.deliver/config

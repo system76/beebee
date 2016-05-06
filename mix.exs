@@ -4,7 +4,7 @@ defmodule BeeBee.Mixfile do
   def project do
     [
       app: :beebee,
-      version: "0.0.1",
+      version: "1.0.0",
       elixir: "~> 1.2",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -22,6 +22,7 @@ defmodule BeeBee.Mixfile do
         :cowboy,
         :logger,
         :exredis,
+        :edeliver,
       ],
     ]
   end
@@ -37,11 +38,14 @@ defmodule BeeBee.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cowboy,  "~> 1.0"},
-      {:plug,    "~> 1.1"},
-      {:exredis, ">= 0.2.4"},
-      {:poison,  "~> 2.1"},
-      {:conform, "~> 2.0"},
+      {:cowboy,       "~> 1.0"},
+      {:plug,         "~> 1.1"},
+      {:exredis,      ">= 0.2.4"},
+      {:poison,       "~> 2.1"},
+      {:exrm,         "~> 1.0", override: true},
+      {:conform,      "~> 2.0", override: true},
+      {:conform_exrm, "~> 1.0.0"},
+      {:edeliver,     ">= 1.1.4"},
     ]
   end
 end
