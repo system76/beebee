@@ -20,8 +20,10 @@ defmodule BeeBee.Mixfile do
       mod: {BeeBee, []},
       applications: [
         :cowboy,
+        :plug,
         :logger,
         :exredis,
+        :poison,
         :edeliver,
       ],
     ]
