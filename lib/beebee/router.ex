@@ -11,14 +11,20 @@ defmodule BeeBee.Router do
   post "/_add" do
     case ShortenedURL.add(conn.params) do
       {:ok, short_tag} ->
-        send_resp(conn, 200, Poison.encode!(%{short_tag: short_tag}))
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, Poison.encode!(%{short_tag: short_tag}))
       {:error, reason} ->
-        send_resp(conn, 422, Poison.encode!(%{error: reason}))
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(422, Poison.encode!(%{error: reason}))
     end
   end
 
   get "/_stats" do
-    send_resp(conn, 200, Poison.encode!(ShortenedURL.stats))
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Poison.encode!(ShortenedURL.stats))
   end
 
   get "/:short_tag" do

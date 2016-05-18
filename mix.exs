@@ -4,7 +4,7 @@ defmodule BeeBee.Mixfile do
   def project do
     [
       app: :beebee,
-      version: "1.0.0",
+      version: "1.1.0",
       elixir: "~> 1.2",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -47,7 +47,7 @@ defmodule BeeBee.Mixfile do
       {:exrm,         "~> 1.0", override: true},
       {:conform,      "~> 2.0", override: true},
       {:conform_exrm, "~> 1.0.0"},
-      {:edeliver,     ">= 1.1.4"},
+      {:edeliver,     ">= 1.1.4"}
     ]
   end
 end
