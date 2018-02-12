@@ -40,6 +40,7 @@ defmodule BeeBee.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
+      {:cors_plug,    "~> 1.1"},
       {:cowboy,       "~> 1.0"},
       {:plug,         "~> 1.1"},
       {:exredis,      ">= 0.2.4"},
