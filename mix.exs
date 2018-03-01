@@ -18,14 +18,6 @@ defmodule BeeBee.Mixfile do
   def application do
     [
       mod: {BeeBee, []},
-      applications: [
-        :cowboy,
-        :plug,
-        :logger,
-        :exredis,
-        :poison,
-        :edeliver,
-      ],
     ]
   end
 
