@@ -32,5 +32,6 @@ end
 
 release :beebee do
   set version: current_version(:beebee)
+  plugin Conform.ReleasePlugin
 end
 
