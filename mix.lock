@@ -1,5 +1,6 @@
 %{"bbmustache": {:hex, :bbmustache, "1.0.4", "7ba94f971c5afd7b6617918a4bb74705e36cab36eb84b19b6a1b7ee06427aa38", [:rebar], []},
   "cf": {:hex, :cf, "0.2.2", "7f2913fff90abcabd0f489896cfeb0b0674f6c8df6c10b17a83175448029896c", [:rebar3], [], "hexpm"},
+  "conform": {:hex, :conform, "2.5.2", "7035787a9c09d28607745444e7a1700426dc47c452634a5694033fa2fbb3414c", [:mix], [{:neotoma, "~> 1.7.3", [hex: :neotoma, repo: "hexpm", optional: false]}], "hexpm"},
   "connection": {:hex, :connection, "1.0.2"},
   "cors_plug": {:hex, :cors_plug, "1.1.2", "3e7451286996f745c7b629c39d24a6493e59b0c8191f27e67f6ab097f96ffd23", [:mix], [{:plug, "> 0.8.0", [hex: :plug, optional: false]}, {:cowboy, "~> 1.0.0", [hex: :cowboy, optional: false]}]},
   "corsica": {:hex, :corsica, "0.4.2", "e01a1745b3273148d44c12c14db459e857ecd293311a0b8ddbd103dc2974907c", [:mix], [{:plug, ">= 0.9.0", [hex: :plug, optional: false]}, {:cowboy, ">= 1.0.0", [hex: :cowboy, optional: false]}]},
