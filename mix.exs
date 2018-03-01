@@ -47,7 +47,7 @@ defmodule BeeBee.Mixfile do
       {:poison,       "~> 2.1"},
 
       {:edeliver, "~> 1.4.5"},
-      {:distillery, "~> 1.0.0", warn_missing: false},
+      {:distillery, "~> 1.5.2", warn_missing: false},
       {:conform, "~> 2.2"},
     ]
   end
