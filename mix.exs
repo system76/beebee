@@ -45,10 +45,9 @@ defmodule BeeBee.Mixfile do
       {:plug,         "~> 1.1"},
       {:exredis,      ">= 0.2.4"},
       {:poison,       "~> 2.1"},
-      {:exrm,         "~> 1.0", override: true},
-      {:conform,      "~> 2.0", override: true},
-      {:conform_exrm, "~> 1.0.0"},
-      {:edeliver,     ">= 1.1.4"}
+
+      {:edeliver, "~> 1.4.5"},
+      {:distillery, "~> 1.0.0", warn_missing: false},
     ]
   end
 end
