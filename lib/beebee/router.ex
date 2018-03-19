@@ -4,7 +4,7 @@ defmodule BeeBee.Router do
   alias BeeBee.ShortenedURL
 
   plug Plug.Logger
-  plug CORSPlug, origins: ["*"]
+  plug CORSPlug
   plug Plug.Parsers, parsers: [:json], json_decoder: Poison
   plug :match
   plug :dispatch
