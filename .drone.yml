@@ -37,8 +37,11 @@ steps:
         from_secret: AWS_ACCESS_KEY
       secret_key:
         from_secret: AWS_SECRET_KEY
-      tags:
-        - ${DRONE_SOURCE_BRANCH}
+    when:
+      branch:
+        - master
+      event:
+        - push
 
 depends_on:
   - Test
