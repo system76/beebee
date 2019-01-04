@@ -32,15 +32,16 @@ defmodule BeeBee.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cors_plug,    "~> 1.1"},
-      {:cowboy,       "~> 1.0"},
-      {:plug,         "~> 1.1"},
-      {:exredis,      ">= 0.2.4"},
-      {:poison,       "~> 2.1"},
+      {:cors_plug,            "~> 1.1"},
+      {:cowboy,               "~> 1.0"},
+      {:plug,                 "~> 1.1"},
+      {:exredis,              ">= 0.2.4"},
+      {:poison,               "~> 2.1"},
 
-      {:edeliver, "~> 1.4.5"},
-      {:distillery, "~> 1.5.2", warn_missing: false},
-      {:conform, "~> 2.2"},
+      {:distillery,           "~> 2.0.12"},
+      {:edeliver,             "~> 1.6.0"},
+      {:env_config_provider,  "~> 0.1.0"},
+      {:toml,                 "~> 0.5.2"},
     ]
   end
 end
