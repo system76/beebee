@@ -1,0 +1,5 @@
+_build
+.git
+deps
+docs
+test

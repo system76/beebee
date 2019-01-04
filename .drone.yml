@@ -1,0 +1,45 @@
+---
+
+kind: pipeline
+name: Test
+
+steps:
+  - name: mix
+    image: elixir:1.7.4-alpine
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+    commands:
+      - apk add --no-cache gcc git libc-dev make
+      - mix local.hex --force
+      - mix local.rebar --force
+      - mix deps.get
+      - mix test
+
+services:
+  - name: redis
+    image: redis:alpine
+    ports:
+      - 6379
+
+---
+
+kind: pipeline
+name: Deploy
+
+steps:
+  - name: docker
+    image: plugins/ecr
+    settings:
+      repo: 696717538424.dkr.ecr.us-west-2.amazonaws.com/beebee
+      registry: 696717538424.dkr.ecr.us-west-2.amazonaws.com
+      region: us-west-2
+      access_key:
+        from_secret: AWS_ACCESS_KEY
+      secret_key:
+        from_secret: AWS_SECRET_KEY
+      tags:
+        - ${DRONE_SOURCE_BRANCH}
+
+depends_on:
+  - Test
