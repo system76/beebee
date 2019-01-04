@@ -6,9 +6,6 @@ name: Test
 steps:
   - name: mix
     image: elixir:1.7.4-alpine
-    environment:
-      DB_HOST: mysql
-      REDIS_HOST: redis
     commands:
       - apk add --no-cache gcc git libc-dev make
       - mix local.hex --force
