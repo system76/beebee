@@ -1,4 +1,6 @@
-%{"bbmustache": {:hex, :bbmustache, "1.0.4", "7ba94f971c5afd7b6617918a4bb74705e36cab36eb84b19b6a1b7ee06427aa38", [:rebar], []},
+%{
+  "artificery": {:hex, :artificery, "0.2.6", "f602909757263f7897130cbd006b0e40514a541b148d366ad65b89236b93497a", [:mix], [], "hexpm"},
+  "bbmustache": {:hex, :bbmustache, "1.0.4", "7ba94f971c5afd7b6617918a4bb74705e36cab36eb84b19b6a1b7ee06427aa38", [:rebar], []},
   "cf": {:hex, :cf, "0.2.2", "7f2913fff90abcabd0f489896cfeb0b0674f6c8df6c10b17a83175448029896c", [:rebar3], [], "hexpm"},
   "conform": {:hex, :conform, "2.5.2", "7035787a9c09d28607745444e7a1700426dc47c452634a5694033fa2fbb3414c", [:mix], [{:neotoma, "~> 1.7.3", [hex: :neotoma, repo: "hexpm", optional: false]}], "hexpm"},
   "connection": {:hex, :connection, "1.0.2"},
@@ -6,8 +8,10 @@
   "corsica": {:hex, :corsica, "0.4.2", "e01a1745b3273148d44c12c14db459e857ecd293311a0b8ddbd103dc2974907c", [:mix], [{:plug, ">= 0.9.0", [hex: :plug, optional: false]}, {:cowboy, ">= 1.0.0", [hex: :cowboy, optional: false]}]},
   "cowboy": {:hex, :cowboy, "1.0.4", "a324a8df9f2316c833a470d918aaf73ae894278b8aa6226ce7a9bf699388f878", [:rebar, :make], [{:cowlib, "~> 1.0.0", [hex: :cowlib, optional: false]}, {:ranch, "~> 1.0", [hex: :ranch, optional: false]}]},
   "cowlib": {:hex, :cowlib, "1.0.2", "9d769a1d062c9c3ac753096f868ca121e2730b9a377de23dec0f7e08b1df84ee", [:make], []},
-  "distillery": {:hex, :distillery, "1.5.2", "eec18b2d37b55b0bcb670cf2bcf64228ed38ce8b046bb30a9b636a6f5a4c0080", [:mix], [], "hexpm"},
-  "edeliver": {:hex, :edeliver, "1.4.5", "80cf483c3634242e2a8871c8af1468301153bd974aaac52dce8b6345c095c8a4", [:mix], [{:distillery, ">= 1.0.0", [hex: :distillery, repo: "hexpm", optional: false]}, {:exrm, ">= 0.16.0", [hex: :exrm, repo: "hexpm", optional: true]}], "hexpm"},
+  "deep_merge": {:hex, :deep_merge, "0.2.0", "c1050fa2edf4848b9f556fba1b75afc66608a4219659e3311d9c9427b5b680b3", [:mix], [], "hexpm"},
+  "distillery": {:hex, :distillery, "2.0.12", "6e78fe042df82610ac3fa50bd7d2d8190ad287d120d3cd1682d83a44e8b34dfb", [:mix], [{:artificery, "~> 0.2", [hex: :artificery, repo: "hexpm", optional: false]}], "hexpm"},
+  "edeliver": {:hex, :edeliver, "1.6.0", "8bfdde1b7ff57deb12fa604c4087b4e15a7aa72d7b3d3d310602ca92c038f3ff", [:mix], [{:distillery, "~> 2.0", [hex: :distillery, repo: "hexpm", optional: true]}], "hexpm"},
+  "env_config_provider": {:hex, :env_config_provider, "0.1.0", "e88bb2a4b1ccb52fbf068c7c803ce234f31fb6840b9c7822f17d1cf16182be47", [:mix], [{:deep_merge, "~> 0.2", [hex: :deep_merge, repo: "hexpm", optional: false]}, {:distillery, "~> 2.0", [hex: :distillery, repo: "hexpm", optional: false]}], "hexpm"},
   "eredis": {:hex, :eredis, "1.0.8", "ab4fda1c4ba7fbe6c19c26c249dc13da916d762502c4b4fa2df401a8d51c5364", [:rebar], []},
   "erlware_commons": {:hex, :erlware_commons, "1.0.5", "fc23d8e304140b65a811f653a76b2fb10b0ce744608caf86e9125ceb349c9442", [:rebar3], [{:cf, "0.2.2", [hex: :cf, repo: "hexpm", optional: false]}], "hexpm"},
   "exredis": {:hex, :exredis, "0.2.4", "07f4ea69b5cf1912d62cea4599687fedb3efe19cced8ddf087ef63dd17447518", [:mix], [{:eredis, ">= 1.0.8", [hex: :eredis, optional: false]}]},
@@ -18,4 +22,6 @@
   "providers": {:hex, :providers, "1.7.0", "bbf730563914328ec2511d205e6477a94831db7297de313b3872a2b26c562eab", [:rebar3], [{:getopt, "1.0.1", [hex: :getopt, repo: "hexpm", optional: false]}], "hexpm"},
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
   "redix": {:hex, :redix, "0.3.6"},
-  "relx": {:hex, :relx, "3.24.4", "2132f0abfa93db3177e66768db5a3d4141d4683bb4864b9dd4452ee7123ded07", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, repo: "hexpm", optional: false]}, {:cf, "0.2.2", [hex: :cf, repo: "hexpm", optional: false]}, {:erlware_commons, "1.0.5", [hex: :erlware_commons, repo: "hexpm", optional: false]}, {:getopt, "1.0.1", [hex: :getopt, repo: "hexpm", optional: false]}, {:providers, "1.7.0", [hex: :providers, repo: "hexpm", optional: false]}], "hexpm"}}
+  "relx": {:hex, :relx, "3.24.4", "2132f0abfa93db3177e66768db5a3d4141d4683bb4864b9dd4452ee7123ded07", [:rebar3], [{:bbmustache, "1.0.4", [hex: :bbmustache, repo: "hexpm", optional: false]}, {:cf, "0.2.2", [hex: :cf, repo: "hexpm", optional: false]}, {:erlware_commons, "1.0.5", [hex: :erlware_commons, repo: "hexpm", optional: false]}, {:getopt, "1.0.1", [hex: :getopt, repo: "hexpm", optional: false]}, {:providers, "1.7.0", [hex: :providers, repo: "hexpm", optional: false]}], "hexpm"},
+  "toml": {:hex, :toml, "0.5.2", "e471388a8726d1ce51a6b32f864b8228a1eb8edc907a0edf2bb50eab9321b526", [:mix], [], "hexpm"},
+}
