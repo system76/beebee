@@ -22,7 +22,7 @@ BeeBee exposes two API endpoints, `POST /_add` and `GET /_stats`.
 
 **Accepts:**
 
-```json
+```js
 {
   "url": "https://github.com", // URL to be shortened
   "short_tag": "github" // OPTIONAL short tag
@@ -33,7 +33,7 @@ If a short tag is omitted, one will be randomly generated for you.
 
 **Returns:**
 
-```json
+```js
 {
   "short_tag": "github" // Short tag now mapped to the provided URL
 }
@@ -43,7 +43,7 @@ If a short tag is omitted, one will be randomly generated for you.
 
 **Returns:**
 
-```json
+```js
 [
   {
     "short_tag": "github",
