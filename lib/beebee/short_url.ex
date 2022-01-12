@@ -16,8 +16,12 @@ defmodule BeeBee.ShortUrl do
   @spec create(map) :: {:ok, Enum.t()} | {:error, any}
   def create(%{"url" => _url} = params), do: create(%{params | "short_tag" => random_short_tag()})
 
-  def create(%{"url" => url, "short_tag" => short_tag}),
-    do: storage_backend().create(url, short_tag)
+  def create(%{"url" => url, "short_tag" => short_tag}) do
+    with {:ok, valid_url} <- validate_url(url),
+         {:ok, result} <- storage_backend().create(valid_url, short_tag) do
+      {:ok, result}
+    end
+  end
 
   @doc """
   Returns a URL given the associated short_tag. It will increment the url hit count
@@ -46,5 +50,21 @@ defmodule BeeBee.ShortUrl do
     bytes
     |> :crypto.strong_rand_bytes()
     |> Base.url_encode64(case: :lower, padding: false)
+  end
+
+  def validate_url(url) do
+    case URI.parse(url) do
+      %URI{scheme: nil} ->
+        {:error, "is missing a scheme (e.g. https)"}
+
+      %URI{host: nil} ->
+        {:error, "is missing a host"}
+
+      %URI{host: host} ->
+        case :inet.gethostbyname(Kernel.to_charlist(host)) do
+          {:ok, _} -> {:ok, url}
+          {:error, _} -> {:error, "invalid host"}
+        end
+    end
   end
 end
