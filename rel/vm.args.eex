@@ -1,0 +1,6 @@
+## Customize flags given to the VM: https://www.erlang.org/doc/man/erl.html
+
+## Disable busy wait in containerized apps
++sbwt none
++sbwtdcpu none
++sbwtdio none
