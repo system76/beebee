@@ -48,7 +48,7 @@ defmodule BeeBee.ShortUrl do
   defp random_short_tag(bytes \\ 6) do
     bytes
     |> :crypto.strong_rand_bytes()
-    |> Base.url_encode64(case: :lower, padding: false)
+    |> Base.url_encode64(padding: false)
   end
 
   # Validate URL to prevent most malicious attacks described on

@@ -59,6 +59,7 @@ defmodule BeeBee.Storage.Redis do
       response
     else
       {:ok, nil} -> {:error, :not_found}
+      error -> error
     end
   end
 
