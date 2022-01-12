@@ -4,7 +4,7 @@
 
 ## Requirements
 
-BeeBee requires Elixir >= 1.2 and Redis >= 3.0.
+BeeBee requires Elixir >= 1.10 and Redis >= 3.0.
 
 ## Setup
 
