@@ -1,0 +1,130 @@
+---
+
+name: Continuous Integration
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - "!master"
+      - "!staging"
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup (Elixir)
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 24
+          elixir-version: '1.13'
+
+      - name: Cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          key: elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-test
+          restore-keys: |
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-
+            elixir-
+          path: |
+            _build
+            deps
+
+      - name: Install (Deps)
+        run: mix deps.get
+
+      - name: Test
+        run: mix test
+
+  Format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup (Elixir)
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 23
+          elixir-version: '1.11'
+
+      - name: Install (Deps)
+        run: mix deps.get
+
+      - name: Format
+        run: mix format --check-formatted
+
+  Credo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup (Elixir)
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 23
+          elixir-version: '1.11'
+
+      - name: Cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          key: elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-credo
+          restore-keys: |
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-
+            elixir-
+          path: |
+            _build
+            deps
+
+      - name: Install (Deps)
+        run: mix deps.get
+
+      - name: Credo
+        run: mix credo
+
+  Dialyzer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup (Elixir)
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: 23
+          elixir-version: '1.11'
+
+      - name: Cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          key: elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-dialyzer
+          restore-keys: |
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-${{ github.ref }}-
+            elixir-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}-
+            elixir-
+          path: |
+            _build
+            deps
+
+      - name: Install (Deps)
+        run: mix deps.get
+
+      - name: Dialyzer
+        run: mix dialyzer
