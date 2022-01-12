@@ -52,6 +52,10 @@ defmodule BeeBee.ShortUrl do
     |> Base.url_encode64(case: :lower, padding: false)
   end
 
+  # Validate URL to prevent most malicious attacks described on
+  # https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+  # Prevents invalid domains or javascript code but till doesn't prevent double redirection
+  # from the target site to an attacker.
   def validate_url(url) do
     case URI.parse(url) do
       %URI{scheme: nil} ->

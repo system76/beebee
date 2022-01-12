@@ -2,9 +2,14 @@ defmodule BeeBee.Router do
   @moduledoc """
   HTTP router for BeeBee API endpoints.
   """
+  require Logger
+
   use Plug.Router
+  use Plug.ErrorHandler
 
   alias BeeBee.ShortUrl
+
+  alias Plug.Conn.Status
 
   plug Plug.RequestId
 
@@ -32,7 +37,7 @@ defmodule BeeBee.Router do
         json_resp(conn, 200, %{short_tag: short_tag})
 
       {:error, reason} ->
-        json_resp(conn, 422, %{error: reason})
+        json_resp(conn, 422, %{errors: [reason]})
     end
   end
 
@@ -46,12 +51,27 @@ defmodule BeeBee.Router do
         redirect(conn, full_url)
 
       {:error, :not_found} ->
-        send_resp(conn, 404, "Not Found")
+        json_resp(conn, 404)
     end
   end
 
   match _ do
-    send_resp(conn, 404, "Not Found")
+    json_resp(conn, 404)
+  end
+
+  def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
+    formatted_reason = Exception.format(kind, reason)
+    formatted_stack = Exception.format_stacktrace(stack)
+
+    Logger.error(
+      "Unexpected error handling API call" <>
+        " method=#{conn.method}, path=#{conn.request_path}",
+      kind: kind,
+      reason: formatted_reason,
+      stacktrace: formatted_stack
+    )
+
+    json_resp(conn, conn.status, %{errors: [Status.reason_phrase(conn.status)]})
   end
 
   defp redirect(conn, to_url, status \\ 301) do
@@ -61,9 +81,15 @@ defmodule BeeBee.Router do
     |> halt()
   end
 
+  defp json_resp(conn, status) when status in [404, :not_found] do
+    body = %{errors: [Status.reason_phrase(404)]}
+    json_resp(conn, status, body)
+  end
+
   defp json_resp(conn, status, body) do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(status, Jason.encode!(body))
+    |> halt()
   end
 end

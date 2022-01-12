@@ -2,6 +2,8 @@ defmodule BeeBee.Storage.Redis do
   @moduledoc """
   Redis storage backend for short URLs.
   """
+  require Logger
+
   @behaviour BeeBee.ShortUrl
 
   @namespace "beebee"
@@ -38,7 +40,13 @@ defmodule BeeBee.Storage.Redis do
       {:ok, 1} ->
         {:error, "Short tag already in use"}
 
-      _error ->
+      {:error, reason} ->
+        Logger.error("Error creating data in Redis",
+          url: url,
+          short_tag: short_tag,
+          reason: reason
+        )
+
         {:error, "Server error"}
     end
   end
