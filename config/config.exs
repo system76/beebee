@@ -5,7 +5,7 @@ import Config
 # https://hexdocs.pm/redix/Redix.html#start_link/1-connection-options
 config :beebee,
        :storage_backend,
-       {BeeBee.ShortUrls.Redis,
+       {BeeBee.Storage.Redis,
         [
           host: System.get_env("REDIS_HOST", "127.0.0.1"),
           port: System.get_env("REDIS_PORT", "6379") |> String.to_integer(),
