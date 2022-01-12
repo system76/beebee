@@ -56,8 +56,8 @@ jobs:
       - name: Setup (Elixir)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: 23
-          elixir-version: '1.11'
+          otp-version: 24
+          elixir-version: '1.13'
 
       - name: Install (Deps)
         run: mix deps.get
@@ -75,8 +75,8 @@ jobs:
       - name: Setup (Elixir)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: 23
-          elixir-version: '1.11'
+          otp-version: 24
+          elixir-version: '1.13'
 
       - name: Cache
         uses: actions/cache@v2
@@ -107,8 +107,8 @@ jobs:
       - name: Setup (Elixir)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: 23
-          elixir-version: '1.11'
+          otp-version: 24
+          elixir-version: '1.13'
 
       - name: Cache
         uses: actions/cache@v2
