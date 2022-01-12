@@ -9,10 +9,8 @@ defmodule BeeBee.ShortUrls.Redis do
   @process_name :redis_short_urls
 
   def child_spec(opts) do
-    redis_config = Keyword.get(opts, :redis_config, [])
-
     children = [
-      Supervisor.child_spec({Redix, Keyword.merge([name: @process_name], redis_config)},
+      Supervisor.child_spec({Redix, Keyword.merge([name: @process_name], opts)},
         id: {Redix, @process_name}
       )
     ]
@@ -65,7 +63,7 @@ defmodule BeeBee.ShortUrls.Redis do
     |> Enum.map(fn
       {_st, [map1, map2]} -> Map.merge(map1, map2)
       {_st, [map1]} -> map1
-   end)
+    end)
   end
 
   defp url_key(short_tag), do: "#{@namespace}:#{short_tag}:url"
