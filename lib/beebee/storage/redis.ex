@@ -64,41 +64,23 @@ defmodule BeeBee.Storage.Redis do
 
   @impl true
   def stats do
-    Stream.resource(
-      fn -> do_scan("0") end,
-      &stream_scan(&1),
-      fn _ -> :ok end
-    )
-    |> Stream.map(fn {_key, value} -> value end)
-    |> Enum.group_by(&Map.get(&1, "short_tag"))
-    |> Enum.map(fn
-      {_st, [map1, map2]} -> Map.merge(map1, map2)
-      {_st, [map1]} -> map1
-    end)
+    scan_keys()
+    |> normalize_stats()
+    |> Enum.map(fn {_key, value} -> value end)
   end
 
   defp url_key(short_tag), do: "#{@namespace}:#{short_tag}:url"
 
   defp count_key(short_tag), do: "#{@namespace}:#{short_tag}:count"
 
-  defp stream_scan({[], "0"}), do: {:halt, nil}
+  defp scan_keys, do: scan_keys(nil, [])
+  defp scan_keys("0", keys), do: keys
 
-  defp stream_scan({[], cursor}) do
-    result = do_scan(cursor)
+  defp scan_keys(cursor, keys) do
+    scan = ["SCAN", cursor || 0, "MATCH", "#{@namespace}:*"]
+    {:ok, [new_cursor, new_keys]} = Redix.command(@process_name, scan)
 
-    stream_scan(result)
-  end
-
-  defp stream_scan({keys, cursor}), do: {keys, {[], cursor}}
-
-  defp do_scan(cursor) do
-    case Redix.command(@process_name, ["SCAN", cursor || 0, "MATCH", "#{@namespace}:*"]) do
-      {:ok, [new_cursor, new_keys]} ->
-        {normalize_stats(new_keys), new_cursor}
-
-      error ->
-        error
-    end
+    scan_keys(new_cursor, keys ++ new_keys)
   end
 
   defp normalize_stats(keys) do

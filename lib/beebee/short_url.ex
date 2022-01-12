@@ -17,9 +17,8 @@ defmodule BeeBee.ShortUrl do
   def create(%{"url" => _url} = params), do: create(%{params | "short_tag" => random_short_tag()})
 
   def create(%{"url" => url, "short_tag" => short_tag}) do
-    with {:ok, valid_url} <- validate_url(url),
-         {:ok, result} <- storage_backend().create(valid_url, short_tag) do
-      {:ok, result}
+    with {:ok, valid_url} <- validate_url(url) do
+      storage_backend().create(valid_url, short_tag)
     end
   end
 
