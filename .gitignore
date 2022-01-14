@@ -3,7 +3,3 @@
 /deps
 erl_crash.dump
 *.ez
-
-# Deploy config
-/config/beebee.conf
-/.deliver/config
