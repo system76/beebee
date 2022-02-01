@@ -1,37 +1,61 @@
-# Dockerfile
-# A production grade docker image for beebee.
 
-FROM elixir:1.8.1-alpine as build
-MAINTAINER Blake Kostner
+FROM elixir:1.13-alpine AS builder
 
-RUN mkdir /app
+RUN apk add --no-cache git openssh-client
 
-COPY . /app
+WORKDIR /tmp/beebee
 
-ENV APP_NAME=beebee
-ENV MIX_ENV=prod
+ADD mix.exs .
+ADD mix.lock .
 
-RUN apk add --no-cache gcc git make musl-dev
-
-RUN cd /app && \
-  mix local.hex --force && \
+RUN mix local.hex --force && \
   mix local.rebar --force && \
-  mix deps.get && \
-  mix release
+  MIX_ENV=prod mix deps.get && \
+  MIX_ENV=prod mix deps.compile
 
-RUN export RELEASE_DIR=`ls -d /app/_build/prod/rel/$APP_NAME/releases/*/` && \
-  mkdir /export && \
-  tar -xf "$RELEASE_DIR/$APP_NAME.tar.gz" -C /export
+# Do not copy _build or it will break the container build
+COPY config ./config
+COPY lib ./lib
+COPY rel ./rel
 
-FROM elixir:1.8.1-alpine as release
+RUN MIX_ENV=prod mix release
 
-RUN apk add --no-cache bash
+FROM alpine:3.12
 
-WORKDIR /opt/beebee
+# These are fed in from the build script
+ARG VCS_REF
+ARG BUILD_DATE
+ARG VERSION
 
-COPY --from=build /export/ /opt/beebee
+LABEL \
+  org.opencontainers.image.created="${BUILD_DATE}" \
+  org.opencontainers.image.description="URL shortener for http://s76.co" \
+  org.opencontainers.image.revision="${VCS_REF}" \
+  org.opencontainers.image.source="https://github.com/pop-os/warehouse" \
+  org.opencontainers.image.title="beebee" \
+  org.opencontainers.image.vendor="system76" \
+  org.opencontainers.image.version="${VERSION}"
 
-RUN touch /etc/beebee.toml
+RUN apk update && \
+  apk add --no-cache \
+  git \
+  bash \
+  libgcc \
+  libstdc++ \
+  ca-certificates \
+  ncurses-libs \
+  openssl
 
-ENTRYPOINT ["/opt/beebee/bin/beebee"]
-CMD ["foreground"]
+RUN addgroup -S beebee && adduser -S beebee -G beebee
+
+COPY --from=builder /tmp/beebee/_build/prod/rel/beebee ./
+
+RUN chown -R beebee:beebee bin/beebee releases/
+RUN chown -R beebee:beebee `ls | grep 'erts-'`/
+
+USER beebee
+
+EXPOSE 4000
+
+ENTRYPOINT [ "bin/beebee" ]
+CMD ["start" ]

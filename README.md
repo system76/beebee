@@ -9,10 +9,8 @@ BeeBee requires Elixir >= 1.10 and Redis >= 3.0.
 ## Setup
 
 1. run `mix deps.get`
-2. run `mix conform.configure`
-3. edit the generated `config/beebee.conf` with your redis credentials
-4. run `mix run --no-halt`
-5. enjoy!
+2. run `mix run --no-halt`
+3. enjoy!
 
 ## Usage
 
