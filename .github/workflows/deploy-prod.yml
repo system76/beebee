@@ -1,0 +1,73 @@
+---
+
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+  workflow_dispatch: {}
+
+jobs:
+  Publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PRODUCTION_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PRODUCTION_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.PRODUCTION_AWS_REGION }}
+
+      - name: Authenticate
+        id: authenticate
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Publish
+        id: publish
+        env:
+          ECR_REPOSITORY: ${{ secrets.PRODUCTION_AWS_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+            --build-arg VCS_REF=$IMAGE_TAG \
+            --build-arg VERSION=$IMAGE_TAG \
+            --tag $ECR_REPOSITORY:$IMAGE_TAG \
+            .
+
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
+
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REPOSITORY:latest
+          docker push $ECR_REPOSITORY:latest
+
+          echo "::set-output name=image::$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Grab
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ secrets.PRODUCTION_AWS_TASK_DEFINITION }} \
+            --query taskDefinition > /tmp/task.json
+
+      - name: Template
+        id: template
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: /tmp/task.json
+          container-name: app
+          image: ${{ steps.publish.outputs.image }}
+
+      - name: Deploy
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.template.outputs.task-definition }}
+          service: production-system76-beebee
+          cluster: system76-us-east-2
+          wait-for-service-stability: true
