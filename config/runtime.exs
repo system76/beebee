@@ -9,14 +9,7 @@ config :beebee,
         [
           host: System.get_env("REDIS_HOST", "127.0.0.1"),
           port: System.get_env("REDIS_PORT", "6379") |> String.to_integer(),
-          password: System.get_env("REDIS_PASSWORD", ""),
           database: 0
         ]}
 
-# Configures Elixir's Logger
-config :logger,
-  backends: [LoggerJSON]
-
-config :logger_json, :backend,
-  formatter: LoggerJSON.Formatters.DatadogLogger,
-  metadata: :all
+config :beebee, BeeBee.Router, port: System.get_env("PORT", "4000") |> String.to_integer()

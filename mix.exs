@@ -5,11 +5,20 @@ defmodule BeeBee.Mixfile do
     [
       app: :beebee,
       version: "1.2.0",
-      elixir: "~> 1.4",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
-      deps: deps
-   ]
+      elixir: "~> 1.10",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      compilers: Mix.compilers(),
+      deps: deps(),
+      default_release: :beebee,
+      releases: [
+        beebee: [
+          include_erts: true,
+          include_executables_for: [:unix],
+          runtime_config_path: "config/runtime.exs"
+        ]
+      ]
+    ]
   end
 
   # Configuration for the OTP application
@@ -18,6 +27,8 @@ defmodule BeeBee.Mixfile do
   def application do
     [
       mod: {BeeBee, []},
+      # Specify extra applications you'll use from Erlang/Elixir
+      extra_applications: [:logger]
     ]
   end
 
@@ -32,16 +43,16 @@ defmodule BeeBee.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:cors_plug,            "~> 1.1"},
-      {:cowboy,               "~> 1.0"},
-      {:plug,                 "~> 1.1"},
-      {:exredis,              ">= 0.2.4"},
-      {:poison,               "~> 2.1"},
-
-      {:distillery,           "~> 2.0.12"},
-      {:edeliver,             "~> 1.6.0"},
-      {:env_config_provider,  "~> 0.1.0"},
-      {:toml,                 "~> 0.5.2"},
+      {:cors_plug, "~> 2.0"},
+      {:jason, "~> 1.3"},
+      {:logger_json, "~> 4.3"},
+      {:plug, "~> 1.12"},
+      {:plug_cowboy, "~> 2.5"},
+      {:redix, "~> 1.0.0"},
+      # Development and testing dependencies
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:mox, "~> 1.0", only: [:test, :dev]}
     ]
   end
 end

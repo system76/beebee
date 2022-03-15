@@ -1,5 +1,9 @@
-_build
-.git
-deps
-docs
-test
+*
+
+!_build/
+
+!config/
+!lib/
+!rel/
+!mix.exs
+!mix.lock

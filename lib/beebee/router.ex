@@ -1,45 +1,95 @@
 defmodule BeeBee.Router do
+  @moduledoc """
+  HTTP router for BeeBee API endpoints.
+  """
+  require Logger
+
   use Plug.Router
+  use Plug.ErrorHandler
 
-  alias BeeBee.ShortenedURL
+  alias BeeBee.ShortUrl
 
-  plug Plug.Logger
+  alias Plug.Conn.Status
+
+  plug Plug.RequestId
+
+  plug LoggerJSON.Plug,
+    metadata_formatter: LoggerJSON.Plug.MetadataFormatters.DatadogLogger
+
   plug CORSPlug
-  plug Plug.Parsers, parsers: [:json], json_decoder: Poison
+  plug Plug.Parsers, parsers: [:json], json_decoder: Jason
   plug :match
-  plug :dispatch
+  plug :dispatch, builder_opts()
+
+  get "/" do
+    redirect(conn, "https://www.system76.com")
+  end
+
+  get "/_health" do
+    {:ok, version} = :application.get_key(:beebee, :vsn)
+
+    json_resp(conn, 200, %{version: List.to_string(version)})
+  end
 
   post "/_add" do
-    case ShortenedURL.add(conn.params) do
+    case ShortUrl.create(conn.params) do
       {:ok, short_tag} ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(200, Poison.encode!(%{short_tag: short_tag}))
+        json_resp(conn, 200, %{short_tag: short_tag})
+
       {:error, reason} ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(422, Poison.encode!(%{error: reason}))
+        json_resp(conn, 422, %{errors: [reason]})
     end
   end
 
   get "/_stats" do
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, Poison.encode!(ShortenedURL.stats))
+    json_resp(conn, 200, ShortUrl.stats())
   end
 
   get "/:short_tag" do
-    case ShortenedURL.find(short_tag) do
+    case ShortUrl.find(short_tag) do
       {:ok, full_url} ->
-        conn
-        |> put_resp_header("Location", full_url)
-        |> send_resp(301, "")
-      :not_found ->
-        send_resp(conn, 404, "Not Found")
+        redirect(conn, full_url)
+
+      {:error, :not_found} ->
+        json_resp(conn, 404)
     end
   end
 
   match _ do
-    send_resp(conn, 404, "Not Found")
+    json_resp(conn, 404)
+  end
+
+  def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
+    formatted_reason = Exception.format(kind, reason)
+    formatted_stack = Exception.format_stacktrace(stack)
+
+    Logger.error(
+      "Unexpected error handling API call" <>
+        " method=#{conn.method}, path=#{conn.request_path}",
+      kind: kind,
+      reason: formatted_reason,
+      stacktrace: formatted_stack
+    )
+
+    json_resp(conn, conn.status, %{errors: [Status.reason_phrase(conn.status)]})
+  end
+
+  defp redirect(conn, to_url, status \\ 301) do
+    conn
+    |> resp(status, "You are being redirected.")
+    |> put_resp_header("location", to_url)
+    |> halt()
+  end
+
+  defp json_resp(conn, status) when status in [404, :not_found] do
+    body = %{errors: [Status.reason_phrase(404)]}
+    json_resp(conn, status, body)
+  end
+
+  defp json_resp(conn, status, body) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(status, Jason.encode!(body))
+    |> halt()
   end
 end

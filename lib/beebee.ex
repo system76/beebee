@@ -1,20 +1,39 @@
 defmodule BeeBee do
+  @moduledoc """
+  URL shortener for http://s76.co
+  """
+  require Logger
+
+  # See http://elixir-lang.org/docs/stable/elixir/Application.html
+  # for more information on OTP Applications
   use Application
 
+  @impl true
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    storage_backend =
+      Application.get_env(
+        :beebee,
+        :storage_backend,
+        {BeeBee.Storage.Redis, []}
+      )
 
     children = [
-      worker(__MODULE__, [], function: :run),
-      worker(BeeBee.Redis, [])
+      storage_backend,
+      {Plug.Cowboy, scheme: :http, plug: BeeBee.Router, options: [port: port()]}
     ]
 
-    opts = [strategy: :one_for_one]
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
+    opts = [strategy: :one_for_one, name: BeeBee.Supervisor]
+
+    Logger.info("Starting BeeBee API on #{port()}...")
 
     Supervisor.start_link(children, opts)
   end
 
-  def run do
-    Plug.Adapters.Cowboy.http BeeBee.Router, []
+  defp port do
+    :beebee
+    |> Application.get_env(BeeBee.Router, port: 4000)
+    |> Keyword.get(:port)
   end
 end
