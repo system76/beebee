@@ -65,6 +65,7 @@ jobs:
           image: ${{ steps.publish.outputs.image }}
 
       - name: Deploy
+        id: deploy
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.template.outputs.task-definition }}
