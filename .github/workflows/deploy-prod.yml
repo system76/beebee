@@ -69,6 +69,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.template.outputs.task-definition }}
-          service: production-system76-beebee
-          cluster: system76-us-east-2
+          service: beebee
+          cluster: system76
           wait-for-service-stability: true
