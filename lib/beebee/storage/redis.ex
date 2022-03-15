@@ -11,6 +11,7 @@ defmodule BeeBee.Storage.Redis do
   @process_name :redis_short_urls
 
   def child_spec(opts) do
+    Logger.info("Redis options #{inspect(opts)}")
     redis_config = Keyword.get(opts, :redis_config, [])
 
     children = [
