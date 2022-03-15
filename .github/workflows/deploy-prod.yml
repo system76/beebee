@@ -61,7 +61,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: /tmp/task.json
-          container-name: app
+          container-name: beebee
           image: ${{ steps.publish.outputs.image }}
 
       - name: Deploy
