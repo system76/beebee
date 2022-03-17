@@ -14,12 +14,16 @@ defmodule BeeBee.ShortUrl do
   is provided, the system will generate a random one.
   """
   @spec create(map) :: {:ok, Enum.t()} | {:error, any}
-  def create(%{"url" => _url} = params), do: create(%{params | "short_tag" => random_short_tag()})
-
   def create(%{"url" => url, "short_tag" => short_tag}) do
     with {:ok, valid_url} <- validate_url(url) do
       storage_backend().create(valid_url, short_tag)
     end
+  end
+
+  def create(%{"url" => _url} = params) do
+    params
+    |> Map.put("short_tag", random_short_tag())
+    |> create()
   end
 
   @doc """
