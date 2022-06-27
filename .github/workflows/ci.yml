@@ -20,6 +20,11 @@ jobs:
     services:
       redis:
         image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 6379:6379
 
@@ -52,7 +57,7 @@ jobs:
       - name: Test
         run: mix test
         env:
-          REDIS_HOST: redis
+          REDIS_HOST: localhost
           REDIS_PORT: 6379
 
   Format:
