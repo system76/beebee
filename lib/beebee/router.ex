@@ -8,16 +8,15 @@ defmodule BeeBee.Router do
   use Plug.ErrorHandler
 
   alias BeeBee.ShortUrl
-
   alias Plug.Conn.Status
 
+  @secured_paths ~w(_add _stats)
+
   plug Plug.RequestId
-
-  plug LoggerJSON.Plug,
-    metadata_formatter: LoggerJSON.Plug.MetadataFormatters.DatadogLogger
-
+  plug LoggerJSON.Plug, metadata_formatter: LoggerJSON.Plug.MetadataFormatters.DatadogLogger
   plug CORSPlug
   plug Plug.Parsers, parsers: [:json], json_decoder: Jason
+  plug :optional_basic_auth
   plug :match
   plug :dispatch, builder_opts()
 
@@ -91,5 +90,29 @@ defmodule BeeBee.Router do
     |> put_resp_content_type("application/json")
     |> send_resp(status, Jason.encode!(body))
     |> halt()
+  end
+
+  defp optional_basic_auth(conn, _opts) do
+    username = Application.get_env(:beebee, BeeBee.Router)[:auth_username]
+    password = Application.get_env(:beebee, BeeBee.Router)[:auth_password]
+
+    if is_secured?(conn.path_info, username, password) do
+      Plug.BasicAuth.basic_auth(conn, username: username, password: password)
+    else
+      conn
+    end
+  end
+
+  defp is_secured?([], _username, _password), do: false
+
+  defp is_secured?([path | _], username, password) do
+    path in @secured_paths && exists?(username) && exists?(password)
+  end
+
+  defp exists?(value) do
+    value
+    |> to_string()
+    |> String.trim()
+    |> Kernel.!=("")
   end
 end

@@ -1,4 +1,5 @@
 /_build
+/.vscode
 /cover
 /deps
 erl_crash.dump
