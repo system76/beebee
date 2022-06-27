@@ -38,8 +38,8 @@ case config_env() do
            :storage_backend,
            {BeeBee.Storage.Redis,
             [
-              host: "127.0.0.1",
-              port: 6379,
+              host: System.get_env("REDIS_HOST", "127.0.0.1"),
+              port: System.get_env("REDIS_PORT", "6379") |> String.to_integer(),
               database: 2
             ]}
 
