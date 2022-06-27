@@ -17,6 +17,10 @@ jobs:
   Test:
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:alpine
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
