@@ -49,6 +49,9 @@ jobs:
 
       - name: Test
         run: mix test
+        env:
+          REDIS_HOST: redis
+          REDIS_PORT: ${{ job.services.redis.ports[6379] }}
 
   Format:
     runs-on: ubuntu-latest
