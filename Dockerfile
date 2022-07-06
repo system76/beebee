@@ -20,7 +20,7 @@ COPY rel ./rel
 
 RUN MIX_ENV=prod mix release
 
-FROM alpine:3.12
+FROM alpine:3.16
 
 # These are fed in from the build script
 ARG VCS_REF
