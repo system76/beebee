@@ -50,6 +50,17 @@ defmodule BeeBee.Storage.Redis do
   end
 
   @impl true
+  def delete(short_tag) do
+    case delete_result(short_tag) do
+      {:ok, [1, 1]} ->
+        :ok
+
+      {:ok, [0, 0]} ->
+        {:error, "Short tag not found"}
+    end
+  end
+
+  @impl true
   def find(short_tag) do
     with {:ok, url} = response when is_binary(url) <-
            Redix.command(@process_name, ["GET", url_key(short_tag)]),
@@ -66,6 +77,13 @@ defmodule BeeBee.Storage.Redis do
     scan_keys()
     |> normalize_stats()
     |> Enum.map(fn {_key, value} -> value end)
+  end
+
+  defp delete_result(short_tag) do
+    Redix.pipeline(@process_name, [
+      ["DEL", url_key(short_tag)],
+      ["DEL", count_key(short_tag)]
+    ])
   end
 
   defp url_key(short_tag), do: "#{@namespace}:#{short_tag}:url"

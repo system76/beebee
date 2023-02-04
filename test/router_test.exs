@@ -102,6 +102,31 @@ defmodule BeeBee.RouterTest do
     end
   end
 
+  describe "DELETE /_delete/:short_tag" do
+    test "delete a short tag" do
+      :post
+      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "yup"})
+      |> Router.call([])
+
+      conn =
+        :delete
+        |> conn("/_delete/yup")
+        |> Router.call([])
+
+      assert conn.status == 204
+    end
+
+    test "fails for non-existent short tag" do
+      conn =
+        :delete
+        |> conn("/_delete/nope")
+        |> Router.call([])
+
+      assert conn.status == 422
+      assert %{"errors" => ["Short tag not found"]} = Jason.decode!(conn.resp_body)
+    end
+  end
+
   describe "Redirect" do
     test "short tag goes to the correct url" do
       :post
@@ -170,6 +195,33 @@ defmodule BeeBee.RouterTest do
       assert conn.status == 200
       assert %{"short_tag" => short_tag} = Jason.decode!(conn.resp_body)
       assert String.length(short_tag) == 8
+    end
+
+    test "blocks unauthenticated delete" do
+      conn =
+        :delete
+        |> conn("/_delete/nope")
+        |> Router.call([])
+
+      assert conn.status == 401
+      assert conn.resp_body == "Unauthorized"
+    end
+
+    test "allows authenticated delete" do
+      encoded_credentials = Plug.BasicAuth.encode_basic_auth("user", "password")
+
+      :post
+      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "yeah"})
+      |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+      |> Router.call([])
+
+      conn =
+        :delete
+        |> conn("/_delete/yeah")
+        |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+        |> Router.call([])
+
+      assert conn.status == 204
     end
 
     test "blocks unauthenticated statistics" do

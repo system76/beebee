@@ -37,6 +37,12 @@ If a short tag is omitted, one will be randomly generated for you.
 }
 ```
 
+### `DELETE /_delete/:short_tag`
+
+**Returns:**
+
+status code 204
+
 ### `GET /_stats`
 
 **Returns:**
