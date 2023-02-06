@@ -5,6 +5,8 @@ defmodule BeeBee.ShortUrl do
 
   @callback create(:inet.hostname(), String.t()) :: {:ok, Enum.t()} | {:error, any}
 
+  @callback delete(String.t()) :: :ok | {:error, any}
+
   @callback find(String.t()) :: {:ok, String.t()} | {:error, any}
 
   @callback stats :: Enumerable.t()
@@ -25,6 +27,12 @@ defmodule BeeBee.ShortUrl do
     |> Map.put("short_tag", random_short_tag())
     |> create()
   end
+
+  @doc """
+  Delete a short_tag from the underlying storage backend.
+  """
+  @spec delete(String.t()) :: :ok | {:error, any}
+  def delete(short_tag), do: storage_backend().delete(short_tag)
 
   @doc """
   Returns a URL given the associated short_tag. It will increment the url hit count

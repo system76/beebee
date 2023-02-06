@@ -55,7 +55,7 @@ jobs:
         run: mix deps.get
 
       - name: Test
-        run: mix test
+        run: mix test --trace
         env:
           REDIS_HOST: localhost
           REDIS_PORT: 6379

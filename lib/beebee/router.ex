@@ -10,7 +10,7 @@ defmodule BeeBee.Router do
   alias BeeBee.ShortUrl
   alias Plug.Conn.Status
 
-  @secured_paths ~w(_add _stats)
+  @secured_paths ~w(_add _stats _delete)
 
   plug Plug.RequestId
   plug LoggerJSON.Plug, metadata_formatter: LoggerJSON.Plug.MetadataFormatters.DatadogLogger
@@ -34,6 +34,17 @@ defmodule BeeBee.Router do
     case ShortUrl.create(conn.params) do
       {:ok, short_tag} ->
         json_resp(conn, 200, %{short_tag: short_tag})
+
+      {:error, reason} ->
+        json_resp(conn, 422, %{errors: [reason]})
+    end
+  end
+
+  delete "/_delete/:short_tag" do
+    case ShortUrl.delete(short_tag) do
+      :ok ->
+        # pass no status or body gets a 204
+        json_resp(conn)
 
       {:error, reason} ->
         json_resp(conn, 422, %{errors: [reason]})
@@ -77,6 +88,14 @@ defmodule BeeBee.Router do
     conn
     |> resp(status, "You are being redirected.")
     |> put_resp_header("location", to_url)
+    |> halt()
+  end
+
+  defp json_resp(conn) do
+    conn
+    |> put_resp_content_type("application/json")
+    # returns status 204
+    |> send_resp(:no_content, "")
     |> halt()
   end
 
