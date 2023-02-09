@@ -5,6 +5,8 @@ defmodule BeeBee.ShortUrl do
 
   @callback create(:inet.hostname(), String.t()) :: {:ok, Enum.t()} | {:error, any}
 
+  @callback update(:inet.hostname(), String.t()) :: {:ok, Enum.t()} | {:error, any}
+
   @callback delete(String.t()) :: :ok | {:error, any}
 
   @callback find(String.t()) :: {:ok, String.t()} | {:error, any}
@@ -26,6 +28,15 @@ defmodule BeeBee.ShortUrl do
     params
     |> Map.put("short_tag", random_short_tag())
     |> create()
+  end
+
+  @doc """
+  Update a url and short_tag in the underlying storage backend.
+  """
+  def update(%{"url" => url, "short_tag" => short_tag}) do
+    with {:ok, valid_url} <- validate_url(url) do
+      storage_backend().update(valid_url, short_tag)
+    end
   end
 
   @doc """

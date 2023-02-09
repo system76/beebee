@@ -10,7 +10,7 @@ defmodule BeeBee.Router do
   alias BeeBee.ShortUrl
   alias Plug.Conn.Status
 
-  @secured_paths ~w(_add _stats _delete)
+  @secured_paths ~w(_add _update _delete _stats)
 
   plug Plug.RequestId
   plug LoggerJSON.Plug, metadata_formatter: LoggerJSON.Plug.MetadataFormatters.DatadogLogger
@@ -34,6 +34,16 @@ defmodule BeeBee.Router do
     case ShortUrl.create(conn.params) do
       {:ok, short_tag} ->
         json_resp(conn, 200, %{short_tag: short_tag})
+
+      {:error, reason} ->
+        json_resp(conn, 422, %{errors: [reason]})
+    end
+  end
+
+  put "/_update" do
+    case ShortUrl.update(conn.params) do
+      {:ok, short_tag, url} ->
+        json_resp(conn, 200, %{short_tag: short_tag, url: url})
 
       {:error, reason} ->
         json_resp(conn, 422, %{errors: [reason]})
