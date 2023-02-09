@@ -42,8 +42,8 @@ defmodule BeeBee.Router do
 
   put "/_update" do
     case ShortUrl.update(conn.params) do
-      {:ok, short_tag} ->
-        json_resp(conn, 200, %{short_tag: short_tag})
+      {:ok, short_tag, url} ->
+        json_resp(conn, 200, %{short_tag: short_tag, url: url})
 
       {:error, reason} ->
         json_resp(conn, 422, %{errors: [reason]})

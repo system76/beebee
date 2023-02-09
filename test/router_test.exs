@@ -110,11 +110,12 @@ defmodule BeeBee.RouterTest do
 
       conn =
         :put
-        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "grape"})
+        |> conn("/_update", %{"url" => "https://reddit.com", "short_tag" => "grape"})
         |> Router.call([])
 
       assert conn.status == 200
       assert %{"short_tag" => "grape"} = Jason.decode!(conn.resp_body)
+      assert %{"url" => "https://reddit.com"} = Jason.decode!(conn.resp_body)
     end
 
     test "fails for non existing short tag" do
@@ -223,6 +224,32 @@ defmodule BeeBee.RouterTest do
       assert String.length(short_tag) == 8
     end
 
+    test "blocks unauthenticated update" do
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "grape"})
+        |> Router.call([])
+
+      assert conn.status == 401
+    end
+
+    test "allows authenticated update" do
+      encoded_credentials = Plug.BasicAuth.encode_basic_auth("user", "password")
+
+      :post
+      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "yuh"})
+      |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+      |> Router.call([])
+
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://reddit.com", "short_tag" => "yuh"})
+        |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+        |> Router.call([])
+
+      assert conn.status == 200
+    end
+
     test "blocks unauthenticated delete" do
       conn =
         :delete
@@ -248,32 +275,6 @@ defmodule BeeBee.RouterTest do
         |> Router.call([])
 
       assert conn.status == 204
-    end
-
-    test "blocks unauthenticated update" do
-      conn =
-        :put
-        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "grape"})
-        |> Router.call([])
-
-      assert conn.status == 401
-    end
-
-    test "allows authenticated update" do
-      encoded_credentials = Plug.BasicAuth.encode_basic_auth("user", "password")
-
-      :post
-      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "yuh"})
-      |> Plug.Conn.put_req_header("authorization", encoded_credentials)
-      |> Router.call([])
-
-      conn =
-        :put
-        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "yuh"})
-        |> Plug.Conn.put_req_header("authorization", encoded_credentials)
-        |> Router.call([])
-
-      assert conn.status == 200
     end
 
     test "blocks unauthenticated statistics" do

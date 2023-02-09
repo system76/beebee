@@ -52,11 +52,9 @@ defmodule BeeBee.Storage.Redis do
   @impl true
   def update(url, short_tag) do
     with {:ok, 1} <- Redix.command(@process_name, ["EXISTS", url_key(short_tag)]),
-         {:ok, ["OK"]} <-
-           Redix.pipeline(@process_name, [
-             ["SET", url_key(short_tag), url]
-           ]) do
-      {:ok, short_tag}
+         {:ok, "OK"} <-
+           Redix.command(@process_name, ["SET", url_key(short_tag), url]) do
+      {:ok, short_tag, url}
     else
       {:ok, 0} ->
         {:error, "Short tag not found"}
