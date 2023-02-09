@@ -50,6 +50,29 @@ defmodule BeeBee.Storage.Redis do
   end
 
   @impl true
+  def update(url, short_tag) do
+    with {:ok, 1} <- Redix.command(@process_name, ["EXISTS", url_key(short_tag)]),
+         {:ok, ["OK"]} <-
+           Redix.pipeline(@process_name, [
+             ["SET", url_key(short_tag), url]
+           ]) do
+      {:ok, short_tag}
+    else
+      {:ok, 0} ->
+        {:error, "Short tag not found"}
+
+      {:error, reason} ->
+        Logger.error("Error updating data in Redis",
+          url: url,
+          short_tag: short_tag,
+          reason: reason
+        )
+
+        {:error, "Server error"}
+    end
+  end
+
+  @impl true
   def delete(short_tag) do
     case delete_result(short_tag) do
       {:ok, [1, 1]} ->

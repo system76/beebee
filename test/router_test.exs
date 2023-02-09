@@ -102,6 +102,32 @@ defmodule BeeBee.RouterTest do
     end
   end
 
+  describe "PUT /_update" do
+    test "updates a given short tag" do
+      :post
+      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "grape"})
+      |> Router.call([])
+
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "grape"})
+        |> Router.call([])
+
+      assert conn.status == 200
+      assert %{"short_tag" => "grape"} = Jason.decode!(conn.resp_body)
+    end
+
+    test "fails for non existing short tag" do
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "ney"})
+        |> Router.call([])
+
+      assert conn.status == 422
+      assert %{"errors" => ["Short tag not found"]} = Jason.decode!(conn.resp_body)
+    end
+  end
+
   describe "DELETE /_delete/:short_tag" do
     test "delete a short tag" do
       :post
@@ -222,6 +248,32 @@ defmodule BeeBee.RouterTest do
         |> Router.call([])
 
       assert conn.status == 204
+    end
+
+    test "blocks unauthenticated update" do
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "grape"})
+        |> Router.call([])
+
+      assert conn.status == 401
+    end
+
+    test "allows authenticated update" do
+      encoded_credentials = Plug.BasicAuth.encode_basic_auth("user", "password")
+
+      :post
+      |> conn("/_add", %{"url" => "https://github.com", "short_tag" => "yuh"})
+      |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+      |> Router.call([])
+
+      conn =
+        :put
+        |> conn("/_update", %{"url" => "https://github.com", "short_tag" => "yuh"})
+        |> Plug.Conn.put_req_header("authorization", encoded_credentials)
+        |> Router.call([])
+
+      assert conn.status == 200
     end
 
     test "blocks unauthenticated statistics" do
