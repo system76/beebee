@@ -1,7 +1,12 @@
+FROM elixir:1.13.1-slim AS builder
 
-FROM elixir:1.13-alpine AS builder
-
-RUN apk add --no-cache git openssh-client
+# Install dependencies
+RUN set -xe; \
+    apt-get update && apt-get install -y \
+        build-essential \
+        ca-certificates \
+        git \
+        openssh-client;
 
 WORKDIR /tmp/beebee
 
@@ -20,7 +25,7 @@ COPY rel ./rel
 
 RUN MIX_ENV=prod mix release
 
-FROM alpine:3.16
+FROM debian:11.6-slim
 
 # These are fed in from the build script
 ARG VCS_REF
@@ -31,27 +36,26 @@ LABEL \
   org.opencontainers.image.created="${BUILD_DATE}" \
   org.opencontainers.image.description="URL shortener for http://s76.co" \
   org.opencontainers.image.revision="${VCS_REF}" \
-  org.opencontainers.image.source="https://github.com/pop-os/warehouse" \
+  org.opencontainers.image.source="https://github.com/system76/beebee" \
   org.opencontainers.image.title="beebee" \
   org.opencontainers.image.vendor="system76" \
   org.opencontainers.image.version="${VERSION}"
 
-RUN apk update && \
-  apk add --no-cache \
-  git \
-  bash \
-  libgcc \
-  libstdc++ \
-  ca-certificates \
-  ncurses-libs \
-  openssl
+RUN set -xe; \
+    apt-get update && apt-get install -y \
+        ca-certificates \
+        libmcrypt4 \
+        openssl;
 
-RUN addgroup -S beebee && adduser -S beebee -G beebee
+RUN set -xe; \
+    adduser --uid 1000 --system --home /beebee --shell /bin/sh --group beebee;
 
 COPY --from=builder /tmp/beebee/_build/prod/rel/beebee ./
 
 RUN chown -R beebee:beebee bin/beebee releases/
 RUN chown -R beebee:beebee `ls | grep 'erts-'`/
+
+ENV LANG=C.UTF-8
 
 USER beebee
 
