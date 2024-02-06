@@ -14,7 +14,7 @@ BeeBee requires Elixir >= 1.10 and Redis >= 3.0.
 
 ## Usage
 
-BeeBee exposes two API endpoints, `POST /_add` and `GET /_stats`.
+BeeBee exposes four API endpoints, `POST /_add`, `PUT /_update`, `DELETE /_delete/:short_tag` and `GET /_stats`.
 
 ### `POST /_add`
 
