@@ -1,0 +1,30 @@
+##
+# Resources for testing and running locally - intended for use with Podman.
+##
+
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: beebee
+  name: beebee
+spec:
+  containers:
+  - name: redis
+    image: docker.io/library/redis:latest
+    ports:
+    - containerPort: 6379
+      hostPort: 6379
+    # for beebee if we want to add it to the pod later with ./pod.sh
+    - containerPort: 4000
+      hostPort: 4000
+    volumeMounts:
+    - mountPath: /data
+      name: redis-pvc
+
+  volumes:
+  - name: redis-pvc
+    persistentVolumeClaim:
+      claimName: beebee-redis
+
+  restartPolicy: Never
